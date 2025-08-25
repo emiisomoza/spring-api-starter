@@ -17,11 +17,19 @@ public class ProductController {
     private final ProductMapper productMapper;
 
     @GetMapping
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(productMapper::toDto)
-                .toList();
+    public List<ProductDto> getAllProducts(@RequestParam(required = false) Byte categoryId) {
+        if (categoryId == null) {
+            return productRepository.findAll()
+                    .stream()
+                    .map(productMapper::toDto)
+                    .toList();
+        } else {
+            return productRepository.findAll()
+                    .stream()
+                    .filter(product -> product.getCategory().getId().equals(categoryId))
+                    .map(productMapper::toDto)
+                    .toList();
+        }
     }
 
     @GetMapping("/{id}")
