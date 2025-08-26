@@ -1,6 +1,7 @@
 package com.codewithmosh.store.controllers;
 
 import com.codewithmosh.store.dtos.ProductDto;
+import com.codewithmosh.store.entities.Product;
 import com.codewithmosh.store.mappers.ProductMapper;
 import com.codewithmosh.store.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
@@ -18,18 +19,16 @@ public class ProductController {
 
     @GetMapping
     public List<ProductDto> getAllProducts(@RequestParam(required = false) Byte categoryId) {
-        if (categoryId == null) {
-            return productRepository.findAll()
-                    .stream()
-                    .map(productMapper::toDto)
-                    .toList();
+        List<Product> products;
+        if (categoryId != null) {
+            products = productRepository.findByCategoryId(categoryId);
         } else {
-            return productRepository.findAll()
-                    .stream()
-                    .filter(product -> product.getCategory().getId().equals(categoryId))
-                    .map(productMapper::toDto)
-                    .toList();
+            products = productRepository.findAll();
         }
+        return products
+                .stream()
+                .map(productMapper::toDto)
+                .toList();
     }
 
     @GetMapping("/{id}")
